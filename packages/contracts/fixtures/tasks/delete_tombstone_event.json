@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "event_id": "dme_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "event_type": "tarefa_excluida",
+  "occurred_at": "2026-06-14T12:30:00Z",
+  "actor": {
+    "type": "usuario",
+    "id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d"
+  },
+  "resource": {
+    "type": "tarefa",
+    "id": "tsk_01hz7s8q4v9y6z2m0k7a1b3c5d"
+  },
+  "source": "web",
+  "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "interno",
+  "metadata_minima": {
+    "status": "nao_iniciado"
+  }
+}

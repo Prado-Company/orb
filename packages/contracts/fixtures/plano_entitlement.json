@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "ent_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "organizacao_id": null,
+  "plano": "free",
+  "recurso": "check_ins_diarios",
+  "limite": 2,
+  "periodo": "diario",
+  "uso_atual": 1,
+  "origem": "plano_padrao",
+  "validade_inicio": "2026-06-01",
+  "validade_fim": "2026-06-30",
+  "estado_assinatura": "ativa",
+  "source": "job",
+  "privacy_level": "financeiro"
+}

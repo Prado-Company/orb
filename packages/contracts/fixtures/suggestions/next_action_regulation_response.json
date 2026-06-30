@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "suggestion_id": "sug_reg_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "source": "web",
+  "correlation_id": "cor_reg_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "sensivel",
+  "decision_engine": "deterministico",
+  "action": {
+    "type": "regular",
+    "resource": {
+      "type": "intervencao",
+      "id": "nova"
+    }
+  },
+  "reason": "regulacao vem antes das tarefas neste momento; comece por uma pausa curta.",
+  "reason_codes": [
+    "estado_em_sobrecarga",
+    "regulacao_antes_de_tarefa",
+    "motor_deterministico_v1"
+  ],
+  "score": null,
+  "drenagem_prevista": null,
+  "actions_available": ["comecar", "adiar", "trocar"],
+  "explanation_inputs": {
+    "energia_estado": "em_sobrecarga",
+    "janela_disponivel_minutos": 40,
+    "task_weight": null,
+    "score": null,
+    "drenagem_prevista": null,
+    "overload_score_band": "sobrecarga",
+    "reason_codes": [
+      "estado_em_sobrecarga",
+      "regulacao_antes_de_tarefa",
+      "motor_deterministico_v1"
+    ],
+    "score_components": {
+      "energia_valor": 20,
+      "janela_disponivel_minutos": 40
+    }
+  },
+  "llm_used": false,
+  "fallback_available": true
+}

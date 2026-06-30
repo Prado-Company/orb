@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "id": "audlog_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "occurred_at": "2026-06-14T12:00:00Z",
+  "actor": {
+    "type": "admin",
+    "id": "adm_01hz7s8q4v9y6z2m0k7a1b3c5d"
+  },
+  "action": "exportacao_solicitada",
+  "resource": {
+    "type": "data_export_request",
+    "id": "exp_01hz7s8q4v9y6z2m0k7a1b3c5d"
+  },
+  "justificativa": "Solicitacao do titular registrada no produto.",
+  "privacy_level": "interno",
+  "metadata_minima": {
+    "source": "admin",
+    "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d"
+  }
+}

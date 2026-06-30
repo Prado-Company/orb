@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "event_id": "dme_01hz7s8q4v9y6z2m0k7a1b3c5e",
+  "event_type": "onboarding_concluido",
+  "occurred_at": "2026-06-14T12:00:00Z",
+  "actor": {
+    "type": "usuario",
+    "id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d"
+  },
+  "resource": {
+    "type": "perfil_energetico",
+    "id": "enp_01hz7s8q4v9y6z2m0k7a1b3c5d"
+  },
+  "source": "web",
+  "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "sensivel",
+  "metadata_minima": {
+    "flow_variant": "resumido",
+    "profile_confidence": "media",
+    "skipped_sensitive_fields": true,
+    "neurodivergence_declared": false,
+    "decision_engine": "deterministico",
+    "llm_used": false,
+    "first_action_offered": true
+  }
+}

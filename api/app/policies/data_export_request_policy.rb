@@ -1,0 +1,2 @@
+class DataExportRequestPolicy < ApplicationPolicy
+end

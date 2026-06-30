@@ -1,0 +1,22 @@
+Rails.application.config.filter_parameters += [
+  :password,
+  :token,
+  :api_key,
+  :authorization,
+  :prompt,
+  :prompt_completo,
+  :check_in,
+  :check_in_bruto,
+  :neurodivergencia,
+  :identificacoes_neurodivergentes,
+  :energia,
+  :task,
+  :event,
+  :title,
+  :titulo,
+  :context,
+  :contexto,
+  :external_ref,
+  :response,
+  :resposta
+]

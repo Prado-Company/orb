@@ -1,0 +1,2 @@
+class CheckInPolicy < ApplicationPolicy
+end

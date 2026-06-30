@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "user": {
+    "version": 1,
+    "id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "nome": "Ana",
+    "email": "ana@example.com",
+    "pronomes": "ela",
+    "timezone": "America/Bahia",
+    "idioma": "pt-BR",
+    "plano_atual": "free",
+    "status_conta": "ativa",
+    "onboarding": {
+      "state": "nao_iniciado",
+      "current_step": null,
+      "total_steps": 6,
+      "resume_available": false
+    },
+    "privacy_level": "interno",
+    "created_at": "2026-06-14T12:00:00Z",
+    "updated_at": "2026-06-14T12:00:00Z"
+  },
+  "session": {
+    "authenticated": true,
+    "transport": "cookie",
+    "expires_at": "2026-07-14T12:00:00Z",
+    "source": "web"
+  },
+  "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "interno"
+}

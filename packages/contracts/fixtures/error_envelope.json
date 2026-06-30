@@ -1,0 +1,13 @@
+{
+  "error": {
+    "code": "validation_failed",
+    "message": "Nao foi possivel processar os dados enviados.",
+    "details": [
+      {
+        "field": "titulo",
+        "issue": "required"
+      }
+    ],
+    "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d"
+  }
+}

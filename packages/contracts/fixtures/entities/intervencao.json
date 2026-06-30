@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "id": "int_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "tipo": "respiracao_guiada",
+  "gatilho": "sobrecarga",
+  "duracao_prevista_minutos": 3,
+  "inicio": "2026-06-14T12:10:00Z",
+  "fim": "2026-06-14T12:13:00Z",
+  "efeito_estimado": "recuperacao_leve",
+  "feedback": "ajudou",
+  "source": "web",
+  "privacy_level": "sensivel"
+}

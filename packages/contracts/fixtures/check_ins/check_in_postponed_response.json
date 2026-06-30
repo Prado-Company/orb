@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "status": "adiado",
+  "check_in": {
+    "version": 1,
+    "id": "chk_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "tipo": "estado_energia",
+    "pergunta_id": "q_estado_energia_v1",
+    "resposta": null,
+    "horario_previsto": "08:00",
+    "horario_respondido": null,
+    "timezone": "America/Bahia",
+    "adiamentos": 1,
+    "origem": "manual",
+    "source": "web",
+    "privacy_level": "sensivel",
+    "created_at": "2026-06-14T11:55:00Z"
+  },
+  "energy": null,
+  "events": [
+    {
+      "version": 1,
+      "event_id": "evt_adiado_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "event_type": "check_in_adiado",
+      "occurred_at": "2026-06-14T12:00:00Z",
+      "actor": { "type": "usuario", "id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d" },
+      "resource": { "type": "check_in", "id": "chk_01hz7s8q4v9y6z2m0k7a1b3c5d" },
+      "source": "web",
+      "correlation_id": "cor_adiado_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "privacy_level": "sensivel",
+      "metadata_minima": {
+        "adiamentos": 1,
+        "next_prompt_policy": "aguardar",
+        "punitive": false
+      }
+    }
+  ],
+  "daily_limit": {
+    "plan": "free",
+    "limit": 2,
+    "used": 1,
+    "remaining": 1,
+    "period": "dia",
+    "resets_at": "2026-06-15T03:00:00Z",
+    "enforced_by": "server"
+  },
+  "correlation_id": "cor_adiado_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "sensivel"
+}

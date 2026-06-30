@@ -1,0 +1,11 @@
+{
+  "error": {
+    "code": "daily_check_in_limit_reached",
+    "message": "Seu limite diario de check-ins foi atingido neste plano.",
+    "details": [
+      { "field": "check_ins", "issue": "free_limit_2" },
+      { "field": "enforced_by", "issue": "server" }
+    ],
+    "correlation_id": "cor_limit_01hz7s8q4v9y6z2m0k7a1b3c5d"
+  }
+}

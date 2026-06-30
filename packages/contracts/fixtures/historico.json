@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "fixture": "history/timeline_response.json",
+  "escopo": "historico_curto",
+  "free": "14 dias",
+  "pro": "historico_completo_sem_apagar_dados_no_downgrade"
+}

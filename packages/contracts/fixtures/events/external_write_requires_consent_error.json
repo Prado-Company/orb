@@ -1,0 +1,8 @@
+{
+  "error": {
+    "code": "external_calendar_write_requires_consent",
+    "message": "Escrita em calendario externo exige consentimento explicito.",
+    "details": [],
+    "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d"
+  }
+}

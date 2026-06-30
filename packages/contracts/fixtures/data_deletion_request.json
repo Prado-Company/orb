@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "id": "del_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "status": "soft_delete_aplicado",
+  "requested_at": "2026-06-14T12:00:00Z",
+  "soft_delete_at": "2026-06-14T12:00:00Z",
+  "hard_delete_scheduled_at": "2026-07-14T12:00:00Z",
+  "completed_at": null,
+  "retencoes_legais": [
+    "billing"
+  ],
+  "source": "web",
+  "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "sensivel"
+}

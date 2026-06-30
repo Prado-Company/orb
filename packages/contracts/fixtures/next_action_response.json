@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "suggestion_id": "sug_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "source": "web",
+  "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "sensivel",
+  "decision_engine": "deterministico",
+  "action": {
+    "type": "comecar",
+    "resource": {
+      "type": "tarefa",
+      "id": "tsk_01hz7s8q4v9y6z2m0k7a1b3c5d"
+    }
+  },
+  "reason": "Cabe na janela atual e tem peso compativel com a energia confirmada pelo servidor.",
+  "reason_codes": [
+    "motor_deterministico_v1",
+    "fits_available_window",
+    "compatible_with_media_energy",
+    "medium_predicted_drain",
+    "score_above_threshold"
+  ],
+  "score": 54,
+  "drenagem_prevista": 12,
+  "actions_available": [
+    "comecar",
+    "adiar",
+    "trocar"
+  ],
+  "explanation_inputs": {
+    "energia_estado": "media",
+    "janela_disponivel_minutos": 45,
+    "task_weight": "medio",
+    "score": 54,
+    "drenagem_prevista": 12,
+    "overload_score_band": "normal",
+    "reason_codes": [
+      "motor_deterministico_v1",
+      "fits_available_window",
+      "compatible_with_media_energy",
+      "medium_predicted_drain",
+      "score_above_threshold"
+    ],
+    "score_components": {
+      "prazo": 5,
+      "compatibilidade_energia": 30,
+      "janela_disponivel": 20,
+      "contexto_categoria": -5,
+      "status": 0,
+      "ajuste_ml": 0,
+      "penalidade_drenagem": -6,
+      "penalidade_cooldown": 0
+    }
+  },
+  "llm_used": false,
+  "fallback_available": true
+}

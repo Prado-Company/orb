@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "contract": "orb_reference_values",
+  "privacy_levels": [
+    "publico",
+    "interno",
+    "sensivel",
+    "agregado",
+    "financeiro"
+  ],
+  "sources": [
+    "web",
+    "android",
+    "ios",
+    "admin",
+    "job",
+    "integration"
+  ],
+  "energy_states": [
+    "alta",
+    "media",
+    "baixa",
+    "em_recuperacao",
+    "em_sobrecarga"
+  ],
+  "standard_headers": {
+    "correlation_id": "X-Correlation-ID",
+    "idempotency_key": "Idempotency-Key",
+    "source": "X-Orb-Source"
+  }
+}

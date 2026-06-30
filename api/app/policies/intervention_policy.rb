@@ -1,0 +1,2 @@
+class InterventionPolicy < ApplicationPolicy
+end

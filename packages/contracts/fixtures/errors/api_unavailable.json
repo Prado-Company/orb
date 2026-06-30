@@ -1,0 +1,8 @@
+{
+  "error": {
+    "code": "api_unavailable",
+    "message": "Sem conexao com a API. Tente novamente.",
+    "details": [],
+    "correlation_id": "cor_api_unavailable_local"
+  }
+}

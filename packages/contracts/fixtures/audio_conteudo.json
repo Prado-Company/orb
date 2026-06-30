@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "cnt_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "titulo": "Pausa de 3 minutos",
+  "categoria": "regulacao",
+  "tipo": "audio",
+  "duracao_segundos": 180,
+  "status": "publicado",
+  "publico_alvo": [
+    "sensibilidade_media",
+    "sobrecarga_leve"
+  ],
+  "plano": "free",
+  "agenda_publicacao": "2026-06-15T09:00:00Z",
+  "privacy_level": "interno",
+  "created_at": "2026-06-14T12:00:00Z"
+}

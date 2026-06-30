@@ -1,0 +1,6 @@
+{
+  "version": 1,
+  "privacy_levels": ["publico", "interno", "sensivel", "agregado", "financeiro"],
+  "sources": ["web", "android", "ios", "admin", "job", "integration"],
+  "energy_states": ["alta", "media", "baixa", "em_recuperacao", "em_sobrecarga"]
+}

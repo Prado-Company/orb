@@ -1,0 +1,1894 @@
+openapi: 3.1.0
+info:
+  title: Orb API
+  version: 0.1.0
+  summary: REST JSON contract for Orb web v1 and future mobile clients.
+servers:
+  - url: http://localhost:3000
+security:
+  - cookie_session: []
+  - bearer_session: []
+paths:
+  /api/v1/health:
+    get:
+      summary: Health check for local API bootstrap.
+      responses:
+        "200":
+          description: API is reachable.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, service, version, correlation_id]
+                properties:
+                  status:
+                    type: string
+                  service:
+                    type: string
+                  version:
+                    type: integer
+                  correlation_id:
+                    type: string
+  /api/v1/auth/sign_up:
+    post:
+      summary: Create the initial web account and opaque session.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [user]
+              properties:
+                user:
+                  type: object
+                  required: [name, email, password]
+                  properties:
+                    name:
+                      type: string
+                    email:
+                      type: string
+                      format: email
+                    password:
+                      type: string
+                      writeOnly: true
+                      minLength: 12
+                      pattern: "^(?=.*[A-Za-z])(?=.*\\d).{12,}$"
+                      description: Must contain at least 12 characters, with letters and numbers. Common weak passwords are rejected server-side.
+                    pronouns:
+                      type: [string, "null"]
+                    timezone:
+                      type: string
+                      default: America/Bahia
+                    locale:
+                      type: string
+                      default: pt-BR
+      responses:
+        "201":
+          description: Account and session created.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+              description: HttpOnly `_orb_session` opaque session cookie.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSessionResponse"
+        "400":
+          $ref: "#/components/responses/InvalidSource"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+  /api/v1/auth/login:
+    post:
+      summary: Create an opaque session for an existing user.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [session]
+              properties:
+                session:
+                  type: object
+                  required: [email, password]
+                  properties:
+                    email:
+                      type: string
+                      format: email
+                    password:
+                      type: string
+                      writeOnly: true
+      responses:
+        "200":
+          description: Session created.
+          headers:
+            Set-Cookie:
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSessionResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationFailed"
+  /api/v1/auth/session:
+    get:
+      summary: Return the current authenticated session.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Current session.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthSessionResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+    delete:
+      summary: Revoke the current opaque session.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "204":
+          description: Session revoked.
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+  /api/v1/energy/current:
+    get:
+      summary: Return the current individual energy outside organization context.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: X-Orb-Organization-Id
+          in: header
+          required: false
+          schema:
+            type: string
+          description: When present, individual sensitive energy is blocked; Teams aggregates require group size >= 3.
+      responses:
+        "200":
+          description: Current individual energy.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [version, energy, correlation_id]
+                properties:
+                  version:
+                    type: integer
+                    const: 1
+                  energy:
+                    $ref: "#/components/schemas/Energy"
+                  correlation_id:
+                    type: string
+        "403":
+          $ref: "#/components/responses/SensitiveIndividualDataBlocked"
+  /api/v1/onboarding/complete:
+    post:
+      summary: Complete summarized onboarding.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OnboardingCompleteRequest"
+      responses:
+        "201":
+          description: Onboarding completed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingCompleteResponse"
+        "400":
+          $ref: "#/components/responses/InvalidSource"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "409":
+          $ref: "#/components/responses/IdempotencyConflict"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+  /api/v1/onboarding/skip:
+    post:
+      summary: Skip onboarding with safe defaults.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OnboardingSkipRequest"
+      responses:
+        "201":
+          description: Onboarding skipped.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/OnboardingSkipResponse"
+        "400":
+          $ref: "#/components/responses/InvalidSource"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "409":
+          $ref: "#/components/responses/IdempotencyConflict"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+  /api/v1/tasks:
+    get:
+      summary: List authenticated user tasks.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Task list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskListResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+    post:
+      summary: Create a task for the authenticated user.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskWriteRequest"
+      responses:
+        "201":
+          description: Task created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+        "400":
+          $ref: "#/components/responses/ValidationError"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+  /api/v1/tasks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Show one task owned by the authenticated user.
+      responses:
+        "200":
+          description: Task found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      summary: Partially update one task.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskPatchRequest"
+      responses:
+        "200":
+          description: Task updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    delete:
+      summary: Soft delete one task.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      responses:
+        "204":
+          description: Task hidden from active views.
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/events:
+    get:
+      summary: List authenticated user events.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - name: at
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Optional timestamp used to calculate available_window_minutes until the next active event.
+      responses:
+        "200":
+          description: Event list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventListResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+    post:
+      summary: Create an anchored event.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventWriteRequest"
+      responses:
+        "201":
+          description: Event created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+  /api/v1/events/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Show one event owned by the authenticated user.
+      responses:
+        "200":
+          description: Event found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    patch:
+      summary: Update one event.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - name: external_calendar_write_consent
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Explicit consent required before mutating external-origin events.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventPatchRequest"
+      responses:
+        "200":
+          description: Event updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "403":
+          $ref: "#/components/responses/ExternalCalendarWriteRequiresConsent"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+    delete:
+      summary: Delete or hide one event when policy allows it.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+        - name: external_calendar_write_consent
+          in: query
+          required: false
+          schema:
+            type: boolean
+          description: Explicit consent required before mutating external-origin events.
+      responses:
+        "204":
+          description: Event removed from active views.
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "403":
+          $ref: "#/components/responses/ExternalCalendarWriteRequiresConsent"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/events/{id}/external_origin:
+    patch:
+      summary: Update external-origin metadata without calendar write access.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      responses:
+        "200":
+          description: External origin updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventResponse"
+        "403":
+          $ref: "#/components/responses/ExternalCalendarWriteRequiresConsent"
+  /api/v1/history:
+    get:
+      summary: Return the authenticated user's short timeline.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: History timeline filtered by entitlement.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HistoryResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+  /api/v1/check_ins:
+    get:
+      summary: List check-ins visible to the authenticated user.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Check-in list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckInListResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+    post:
+      summary: Create a check-in prompt.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckInCreateRequest"
+      responses:
+        "201":
+          description: Check-in created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckInCreateResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "429":
+          $ref: "#/components/responses/DailyCheckInLimitReached"
+  /api/v1/check_ins/{check_in_id}/responses:
+    post:
+      summary: Respond to a check-in and recalibrate energy on the server.
+      parameters:
+        - name: check_in_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckInResponseRequest"
+      responses:
+        "200":
+          description: Check-in softly postponed without recalibration.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckInResponsePayload"
+        "201":
+          description: Response recorded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckInResponsePayload"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/CheckInAlreadyAnswered"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+        "429":
+          $ref: "#/components/responses/DailyCheckInLimitReached"
+  /api/v1/suggestions/next_action:
+    post:
+      summary: Ask the deterministic engine for one next action.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      responses:
+        "200":
+          description: Next action suggestion.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NextAction"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+  /api/v1/suggestions/{suggestion_id}/actions:
+    post:
+      summary: Record a human action on a deterministic suggestion.
+      parameters:
+        - name: suggestion_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SuggestionActionRequest"
+      responses:
+        "200":
+          description: Suggestion action recorded.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuggestionActionResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /api/v1/interventions:
+    get:
+      summary: List self-regulation interventions.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+      responses:
+        "200":
+          description: Intervention list.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InterventionListResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+    post:
+      summary: Start an intervention.
+      parameters:
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InterventionStartRequest"
+      responses:
+        "201":
+          description: Intervention started.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InterventionResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+  /api/v1/interventions/{intervention_id}:
+    patch:
+      summary: Finish an intervention and recalibrate energy.
+      parameters:
+        - name: intervention_id
+          in: path
+          required: true
+          schema:
+            type: string
+        - $ref: "#/components/parameters/CorrelationId"
+        - $ref: "#/components/parameters/OrbSource"
+        - $ref: "#/components/parameters/IdempotencyKey"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InterventionFinishRequest"
+      responses:
+        "200":
+          description: Intervention finished.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InterventionResponse"
+        "401":
+          $ref: "#/components/responses/AuthenticationRequired"
+        "404":
+          $ref: "#/components/responses/NotFound"
+components:
+  securitySchemes:
+    cookie_session:
+      type: apiKey
+      in: cookie
+      name: _orb_session
+    bearer_session:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque
+  parameters:
+    CorrelationId:
+      name: X-Correlation-ID
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Client-provided correlation_id; server generates one when absent.
+    OrbSource:
+      name: X-Orb-Source
+      in: header
+      required: false
+      schema:
+        type: string
+        enum: [web, android, ios]
+      description: Public product surface that initiated the request; admin, job and integration sources are server-only.
+    IdempotencyKey:
+      name: Idempotency-Key
+      in: header
+      required: false
+      schema:
+        type: string
+      description: Required by critical mutations before production.
+  responses:
+    AuthenticationRequired:
+      description: User session is required.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    AuthenticationFailed:
+      description: Email or password is invalid; credentials are never echoed.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    InvalidSource:
+      description: Source header is not supported.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ValidationError:
+      description: Request is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    IdempotencyConflict:
+      description: Idempotency key was already used with a different onboarding payload.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Resource is not visible to this user.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    SensitiveIndividualDataBlocked:
+      description: Individual sensitive data is not available in organization context.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ExternalCalendarWriteRequiresConsent:
+      description: External calendar write requires explicit user consent.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    DailyCheckInLimitReached:
+      description: Daily check-in limit was enforced by the server.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    CheckInAlreadyAnswered:
+      description: Check-in responses are immutable after the first answer.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    Source:
+      type: string
+      enum: [web, android, ios, admin, job, integration]
+    PrivacyLevel:
+      type: string
+      enum: [publico, interno, sensivel, agregado, financeiro]
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, details, correlation_id]
+          properties:
+            code:
+              type: string
+              pattern: "^[a-z0-9_]+$"
+              example: authentication_required
+            message:
+              type: string
+              example: Entre na sua conta para continuar.
+            details:
+              type: array
+              items:
+                type: object
+                additionalProperties: true
+            correlation_id:
+              type: string
+              example: cor_01hz7s8q4v9y6z2m0k7a1b3c5d
+    User:
+      type: object
+      required: [version, id, nome, email, timezone, idioma, plano_atual, status_conta, onboarding, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        id:
+          type: string
+        nome:
+          type: string
+        email:
+          type: string
+          format: email
+        pronomes:
+          type: [string, "null"]
+        timezone:
+          type: string
+        idioma:
+          type: string
+        plano_atual:
+          type: string
+          enum: [free, pro, teams]
+        status_conta:
+          type: string
+          enum: [ativa, suspensa, soft_delete_aplicado, deletada]
+        onboarding:
+          $ref: "#/components/schemas/OnboardingSessionState"
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    AuthSessionResponse:
+      type: object
+      required: [version, user, session, correlation_id, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        user:
+          $ref: "#/components/schemas/User"
+        session:
+          type: object
+          required: [authenticated, transport, expires_at, source]
+          properties:
+            authenticated:
+              type: boolean
+              const: true
+            transport:
+              type: string
+              enum: [cookie]
+            expires_at:
+              type: string
+              format: date-time
+            source:
+              $ref: "#/components/schemas/Source"
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    OnboardingSessionState:
+      type: object
+      required: [state, resume_available]
+      properties:
+        state:
+          type: string
+          enum: [nao_iniciado, em_andamento, pulado, concluido, revisao_solicitada]
+        current_step:
+          type: [integer, "null"]
+          minimum: 1
+        total_steps:
+          type: [integer, "null"]
+          minimum: 1
+        resume_available:
+          type: boolean
+    OnboardingCompleteRequest:
+      type: object
+      required: [version, flow_variant, started_at, completed_at, profile_inputs]
+      properties:
+        version:
+          type: integer
+          const: 1
+        flow_variant:
+          type: string
+          enum: [resumido]
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        profile_inputs:
+          $ref: "#/components/schemas/OnboardingProfileInputs"
+        skipped_sensitive_fields:
+          type: boolean
+          description: True when optional sensitive fields, such as neurodivergence, were not declared.
+        first_action_requested:
+          type: boolean
+          default: true
+    OnboardingSkipRequest:
+      type: object
+      required: [version, occurred_at]
+      properties:
+        version:
+          type: integer
+          const: 1
+        occurred_at:
+          type: string
+          format: date-time
+        reason:
+          type: string
+          enum: [baixa_energia, explorar_primeiro, sem_tempo, prefiro_responder_depois]
+          description: Structured reason only; no free-form sensitive text.
+        resume_reminder_opt_in:
+          type: boolean
+          default: true
+    OnboardingProfileInputs:
+      type: object
+      required: [timezone, idioma, objetivo_principal, horario_primeiro_check_in, horario_ultimo_check_in]
+      properties:
+        nome:
+          type: string
+          maxLength: 80
+        pronomes:
+          type: [string, "null"]
+          maxLength: 40
+        timezone:
+          type: string
+          example: America/Bahia
+        idioma:
+          type: string
+          example: pt-BR
+        objetivo_principal:
+          type: string
+          enum: [trabalho, estudo, casa_e_familia, autocuidado, transicao_de_carreira, rotina_geral]
+        janelas_pico:
+          type: array
+          items:
+            type: string
+            enum: [manha_cedo, fim_da_manha, tarde, noite, madrugada, varia_muito, ainda_nao_sei]
+        janelas_baixa_energia:
+          type: array
+          items:
+            type: string
+            enum: [ao_acordar, manha_cedo, fim_da_manha, depois_do_almoco, fim_da_tarde, depois_de_reunioes, tarde, noite, madrugada, varia_muito, ainda_nao_sei, desconhecida]
+        gatilhos:
+          type: array
+          items:
+            type: string
+            enum: [barulho, luz_forte, reunioes_longas, decisoes_pequenas, mudancas_ultima_hora, mensagens_acumuladas, tarefas_sem_comeco, interrupcoes, deslocamento, conflitos, nenhum]
+        sensibilidade:
+          type: string
+          enum: [baixa, media, alta]
+          default: media
+        tom_preferido:
+          type: string
+          enum: [acolhedor, direto, gentil]
+          default: acolhedor
+        intensidade_notificacao:
+          type: string
+          enum: [minima, equilibrado, presente]
+          default: equilibrado
+        horario_primeiro_check_in:
+          type: string
+          pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        horario_ultimo_check_in:
+          type: string
+          pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        identificacoes_neurodivergentes:
+          type: array
+          description: Campo sensivel opcional, controlado por enum, nunca usado para preco, acesso, ranking ou terceiros.
+          items:
+            type: string
+            enum: [tdah, tea_autismo, autismo, ahsd, dislexia, burnout, outras_condicoes_neurodivergentes, ainda_investigando, nao_sei_tenho_duvidas, nao_possuo, prefiro_nao_dizer]
+    OnboardingCompleteResponse:
+      type: object
+      required: [version, onboarding_state, source, perfil_energetico, energia, event, first_action, correlation_id, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        onboarding_state:
+          type: string
+          enum: [onboarding_concluido]
+        source:
+          $ref: "#/components/schemas/Source"
+        perfil_energetico:
+          $ref: "#/components/schemas/EnergeticProfile"
+        energia:
+          $ref: "#/components/schemas/Energy"
+        event:
+          $ref: "#/components/schemas/DomainEvent"
+        first_action:
+          type: object
+          required: [type, status]
+          properties:
+            type:
+              type: string
+              enum: [create_first_task_or_event]
+            status:
+              type: string
+              enum: [offered]
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    OnboardingSkipResponse:
+      type: object
+      required: [version, onboarding_state, source, default_profile_created, resume_available, defaults, perfil_energetico, energia, event, correlation_id, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        onboarding_state:
+          type: string
+          enum: [onboarding_pulado]
+        source:
+          $ref: "#/components/schemas/Source"
+        default_profile_created:
+          type: boolean
+        resume_available:
+          type: boolean
+        defaults:
+          type: object
+          required: [objetivo_principal, janelas_pico, gatilhos, tom_preferido, sensibilidade, intensidade_notificacao, horario_primeiro_check_in, horario_ultimo_check_in, energia_inicial]
+          properties:
+            objetivo_principal:
+              type: string
+              enum: [rotina_geral]
+            janelas_pico:
+              type: array
+              items:
+                type: string
+            gatilhos:
+              type: array
+              items:
+                type: string
+            tom_preferido:
+              type: string
+              enum: [acolhedor]
+            sensibilidade:
+              type: string
+              enum: [media]
+            intensidade_notificacao:
+              type: string
+              enum: [equilibrado]
+            horario_primeiro_check_in:
+              type: string
+              pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+            horario_ultimo_check_in:
+              type: string
+              pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+            energia_inicial:
+              type: object
+              required: [estado_qualitativo, confianca]
+              properties:
+                estado_qualitativo:
+                  type: string
+                  enum: [media]
+                confianca:
+                  type: string
+                  enum: [baixa]
+        perfil_energetico:
+          $ref: "#/components/schemas/EnergeticProfile"
+        energia:
+          $ref: "#/components/schemas/Energy"
+        event:
+          $ref: "#/components/schemas/DomainEvent"
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    EnergeticProfile:
+      type: object
+      required: [version, id, usuario_id, arquetipo, objetivo_principal, tom_preferido, sensibilidade, intensidade_notificacao, confianca, data_onboarding, decision_engine, llm_used, source, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        id:
+          type: string
+        usuario_id:
+          type: string
+        arquetipo:
+          type: string
+        objetivo_principal:
+          type: string
+        janelas_pico:
+          type: array
+          items:
+            type: string
+        janelas_baixa_energia:
+          type: array
+          items:
+            type: string
+        gatilhos:
+          type: array
+          items:
+            type: string
+        identificacoes_neurodivergentes:
+          type: array
+          description: Campo sensivel opcional, controlado por enum e nunca usado para preco, acesso ou ranking.
+          items:
+            type: string
+            enum: [tdah, tea_autismo, autismo, ahsd, dislexia, burnout, outras_condicoes_neurodivergentes, ainda_investigando, nao_sei_tenho_duvidas, nao_possuo, prefiro_nao_dizer]
+        tom_preferido:
+          type: string
+          enum: [acolhedor, direto, gentil]
+        sensibilidade:
+          type: string
+          enum: [baixa, media, alta]
+        intensidade_notificacao:
+          type: string
+          enum: [minima, equilibrado, presente]
+        horario_primeiro_check_in:
+          type: string
+          pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        horario_ultimo_check_in:
+          type: string
+          pattern: "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+        horarios_refeicoes:
+          type: array
+          items:
+            type: string
+        pausas_protegidas:
+          type: array
+          items:
+            type: string
+        confianca:
+          type: string
+          enum: [baixa, media, alta]
+        data_onboarding:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        decision_engine:
+          type: string
+          enum: [deterministico]
+        llm_used:
+          type: boolean
+          const: false
+        source:
+          $ref: "#/components/schemas/Source"
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    Energy:
+      type: object
+      required: [version, usuario_id, valor, estado_qualitativo, fonte_calibracao, confianca, timestamp, fatores, reason_codes, source, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        usuario_id:
+          type: string
+        valor:
+          type: integer
+          minimum: 0
+          maximum: 100
+        estado_qualitativo:
+          type: string
+          enum: [alta, media, baixa, em_recuperacao, em_sobrecarga]
+        fonte_calibracao:
+          type: string
+          enum: [onboarding, check_in, tarefa, intervencao, historico]
+        confianca:
+          type: string
+          enum: [baixa, media, alta]
+        timestamp:
+          type: string
+          format: date-time
+        fatores:
+          type: array
+          items:
+            type: string
+        reason_codes:
+          type: array
+          description: Alias explicito de fatores para explicabilidade do motor deterministico; vocabulário controlado, sem payload bruto.
+          items:
+            type: string
+        source:
+          $ref: "#/components/schemas/Source"
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    Task:
+      type: object
+      required: [version, id, usuario_id, titulo, categoria, peso, status, origem, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        id:
+          type: string
+        usuario_id:
+          type: string
+        organizacao_id:
+          type: [string, "null"]
+        titulo:
+          type: string
+          maxLength: 160
+        categoria:
+          type: string
+        prazo:
+          type: [string, "null"]
+          format: date
+        duracao_estimada_minutos:
+          type: [integer, "null"]
+          minimum: 1
+        peso:
+          type: string
+          enum: [leve, medio, pesado]
+        status:
+          type: string
+          enum: [nao_iniciado, em_progresso, concluido, adiado]
+        recorrencia:
+          type: [object, "null"]
+        origem:
+          type: string
+          enum: [usuario, orb, integration]
+        responsavel_id:
+          type: [string, "null"]
+        contexto_resumido:
+          type: [string, "null"]
+          maxLength: 240
+        micro_passo_id:
+          type: [string, "null"]
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    TaskWrite:
+      type: object
+      required: [titulo]
+      properties:
+        titulo:
+          type: string
+          maxLength: 160
+        categoria:
+          type: string
+        prazo:
+          type: [string, "null"]
+          format: date
+        duracao_estimada_minutos:
+          type: [integer, "null"]
+          minimum: 1
+        peso:
+          type: [string, "null"]
+          enum: [leve, medio, pesado, null]
+        status:
+          type: string
+          enum: [nao_iniciado, em_progresso, concluido, adiado]
+        contexto:
+          type: [string, "null"]
+          description: Free text visible only to the owner; logs/events must not copy it raw.
+    TaskWriteRequest:
+      type: object
+      required: [task]
+      properties:
+        task:
+          $ref: "#/components/schemas/TaskWrite"
+    TaskPatchRequest:
+      type: object
+      required: [changes]
+      properties:
+        changes:
+          type: object
+          description: Partial update; omitted fields are preserved by Tasks::ApplyUpdate.
+          properties:
+            titulo:
+              type: string
+              maxLength: 160
+            categoria:
+              type: string
+            prazo:
+              type: [string, "null"]
+              format: date
+            duracao_estimada_minutos:
+              type: [integer, "null"]
+              minimum: 1
+            peso:
+              type: [string, "null"]
+              enum: [leve, medio, pesado, null]
+            status:
+              type: string
+              enum: [nao_iniciado, em_progresso, concluido, adiado]
+            contexto:
+              type: [string, "null"]
+    TaskResponse:
+      type: object
+      required: [version, task, correlation_id]
+      properties:
+        version:
+          type: integer
+          const: 1
+        task:
+          $ref: "#/components/schemas/Task"
+        correlation_id:
+          type: string
+    TaskListResponse:
+      type: object
+      required: [version, tasks, correlation_id]
+      properties:
+        version:
+          type: integer
+          const: 1
+        tasks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Task"
+        correlation_id:
+          type: string
+    Event:
+      type: object
+      required: [version, id, usuario_id, titulo, inicio, fim, timezone, categoria, peso, status, origem, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        id:
+          type: string
+        usuario_id:
+          type: string
+        organizacao_id:
+          type: [string, "null"]
+        titulo:
+          type: string
+        inicio:
+          type: string
+          format: date-time
+        fim:
+          type: string
+          format: date-time
+        timezone:
+          type: string
+        categoria:
+          type: string
+        peso:
+          type: string
+          enum: [leve, medio, pesado]
+        status:
+          type: string
+          enum: [confirmado, cancelado, concluido]
+        recorrencia:
+          type: [object, "null"]
+        origem:
+          type: string
+          enum: [usuario, integration]
+        external_ref:
+          type: [string, "null"]
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    EventWrite:
+      type: object
+      required: [titulo, inicio, fim, timezone]
+      properties:
+        titulo:
+          type: string
+          maxLength: 160
+        inicio:
+          type: string
+          format: date-time
+        fim:
+          type: string
+          format: date-time
+        timezone:
+          type: string
+        categoria:
+          type: string
+        peso:
+          type: [string, "null"]
+          enum: [leve, medio, pesado, null]
+        status:
+          type: string
+          enum: [confirmado, cancelado, concluido]
+    EventWriteRequest:
+      type: object
+      required: [event]
+      properties:
+        event:
+          $ref: "#/components/schemas/EventWrite"
+    EventPatchRequest:
+      type: object
+      required: [changes]
+      properties:
+        changes:
+          type: object
+          description: Partial update; omitted fields are preserved by Events::ApplyUpdate.
+          properties:
+            titulo:
+              type: string
+              maxLength: 160
+            inicio:
+              type: string
+              format: date-time
+            fim:
+              type: string
+              format: date-time
+            timezone:
+              type: string
+            categoria:
+              type: string
+            peso:
+              type: [string, "null"]
+              enum: [leve, medio, pesado, null]
+            status:
+              type: string
+              enum: [confirmado, cancelado, concluido]
+    EventResponse:
+      type: object
+      required: [version, event, correlation_id]
+      properties:
+        version:
+          type: integer
+          const: 1
+        event:
+          $ref: "#/components/schemas/Event"
+        correlation_id:
+          type: string
+    EventListResponse:
+      type: object
+      required: [version, events, correlation_id]
+      properties:
+        version:
+          type: integer
+          const: 1
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        available_window_minutes:
+          type: [integer, "null"]
+          description: Minutes from the requested timestamp until the next active event. Example 12:20 to 13:00 returns 40.
+        correlation_id:
+          type: string
+    HistoryEntry:
+      type: object
+      required: [version, kind, event_type, occurred_at, resource, privacy_level, summary]
+      properties:
+        version:
+          type: integer
+          const: 1
+        kind:
+          type: string
+          enum: [tarefa, evento, check_in, energia, intervencao]
+        event_type:
+          type: string
+          enum:
+            - tarefa_criada
+            - tarefa_atualizada
+            - tarefa_concluida
+            - tarefa_adiada
+            - tarefa_excluida
+            - evento_criado
+            - evento_atualizado
+            - evento_excluido
+            - check_in_criado
+            - check_in_respondido
+            - energia_registrada
+            - intervencao_iniciada
+            - intervencao_finalizada
+        occurred_at:
+          type: string
+          format: date-time
+        resource:
+          $ref: "#/components/schemas/ResourceRef"
+        source:
+          $ref: "#/components/schemas/Source"
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+        summary:
+          type: object
+          description: Minimized owner-visible summary; tombstones do not copy task/event title or context.
+          additionalProperties: true
+    HistoryResponse:
+      type: object
+      required: [version, history, entitlement, correlation_id, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/HistoryEntry"
+        entitlement:
+          type: object
+          required: [plan, history_window_days, full_history, downgrade_behavior]
+          properties:
+            plan:
+              type: string
+              enum: [free, pro, teams]
+            history_window_days:
+              type: [integer, "null"]
+              enum: [14, null]
+            full_history:
+              type: boolean
+            downgrade_behavior:
+              type: string
+              enum: [downgrade_preserva_dados_e_oculta_historico_fora_do_plano]
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    CheckIn:
+      type: object
+      required: [version, id, usuario_id, tipo, pergunta_id, horario_previsto, timezone, adiamentos, origem, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        id:
+          type: string
+        usuario_id:
+          type: string
+        tipo:
+          type: string
+        pergunta_id:
+          type: string
+        resposta:
+          type: [string, "null"]
+          enum: [muito_baixo, baixo, neutro, bom, alto, null]
+        horario_previsto:
+          type: string
+        horario_respondido:
+          type: [string, "null"]
+          format: date-time
+        timezone:
+          type: string
+        adiamentos:
+          type: integer
+          minimum: 0
+        origem:
+          type: string
+          enum: [programado, manual]
+        source:
+          $ref: "#/components/schemas/Source"
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    DailyLimit:
+      type: object
+      required: [plan, limit, used, remaining, period, resets_at, enforced_by]
+      properties:
+        plan:
+          type: string
+          enum: [free, pro, teams]
+        limit:
+          type: integer
+          enum: [2, 5]
+        used:
+          type: integer
+          minimum: 0
+        remaining:
+          type: integer
+          minimum: 0
+        period:
+          type: string
+          enum: [dia]
+        resets_at:
+          type: string
+          format: date-time
+        enforced_by:
+          type: string
+          enum: [server]
+    CheckInCreateRequest:
+      type: object
+      properties:
+        check_in:
+          type: object
+          properties:
+            tipo:
+              type: string
+            pergunta_id:
+              type: string
+            horario_previsto:
+              type: string
+            timezone:
+              type: string
+            origem:
+              type: string
+              enum: [manual, programado]
+    CheckInCreateResponse:
+      type: object
+      required: [version, check_in, daily_limit, correlation_id, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        check_in:
+          $ref: "#/components/schemas/CheckIn"
+        daily_limit:
+          $ref: "#/components/schemas/DailyLimit"
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    CheckInListResponse:
+      type: object
+      required: [version, check_ins, daily_limit, correlation_id, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        check_ins:
+          type: array
+          items:
+            $ref: "#/components/schemas/CheckIn"
+        daily_limit:
+          $ref: "#/components/schemas/DailyLimit"
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    CheckInResponseRequest:
+      type: object
+      required: [response]
+      properties:
+        response:
+          type: object
+          required: [resposta]
+          properties:
+            resposta:
+              type: string
+              enum: [muito_baixo, baixo, neutro, bom, alto, adiar, prefiro_responder_depois]
+    CheckInResponsePayload:
+      type: object
+      required: [version, status, check_in, energy, events, daily_limit, correlation_id, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        status:
+          type: string
+          enum: [respondido, adiado]
+        check_in:
+          $ref: "#/components/schemas/CheckIn"
+        energy:
+          oneOf:
+            - $ref: "#/components/schemas/Energy"
+            - type: "null"
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/DomainEvent"
+        daily_limit:
+          $ref: "#/components/schemas/DailyLimit"
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    NextAction:
+      type: object
+      required: [version, suggestion_id, decision_engine, action, reason, reason_codes, score, drenagem_prevista, actions_available, explanation_inputs, llm_used, fallback_available, correlation_id, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        suggestion_id:
+          type: string
+        decision_engine:
+          type: string
+          enum: [deterministico]
+        action:
+          type: object
+          required: [type, resource]
+          properties:
+            type:
+              type: string
+              enum: [comecar, adiar, trocar, regular, acompanhar_evento, preparar_evento]
+            resource:
+              $ref: "#/components/schemas/ResourceRef"
+        reason:
+          type: string
+        reason_codes:
+          type: array
+          description: Códigos explicáveis derivados do motor; não incluem título, contexto, check-in bruto ou prompt.
+          items:
+            type: string
+        score:
+          type: [integer, "null"]
+          description: Score determinístico da tarefa; nulo para regulação, evento ou fallback sem tarefa.
+        drenagem_prevista:
+          type: [integer, "null"]
+          description: Drenagem prevista já minimizada; nula quando a próxima ação não é tarefa.
+        actions_available:
+          type: array
+          items:
+            type: string
+            enum: [comecar, adiar, trocar]
+        explanation_inputs:
+          type: object
+          required: [energia_estado, janela_disponivel_minutos]
+          properties:
+            energia_estado:
+              type: string
+              enum: [alta, media, baixa, em_recuperacao, em_sobrecarga]
+            janela_disponivel_minutos:
+              type: integer
+              minimum: 0
+            task_weight:
+              type: [string, "null"]
+            score:
+              type: [integer, "null"]
+            drenagem_prevista:
+              type: [integer, "null"]
+            overload_score_band:
+              type: string
+              enum: [normal, atencao, sobrecarga]
+            reason_codes:
+              type: array
+              items:
+                type: string
+            score_components:
+              type: object
+              additionalProperties:
+                type: integer
+        llm_used:
+          type: boolean
+          const: false
+        fallback_available:
+          type: boolean
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    SuggestionActionRequest:
+      type: object
+      required: [suggestion_action]
+      properties:
+        suggestion_action:
+          type: object
+          required: [action]
+          properties:
+            action:
+              type: string
+              enum: [comecar, adiar, trocar]
+    SuggestionActionResponse:
+      type: object
+      required: [version, suggestion_id, action_taken, event, correlation_id, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        suggestion_id:
+          type: string
+        action_taken:
+          type: string
+          enum: [comecar, adiar, trocar]
+        event:
+          $ref: "#/components/schemas/DomainEvent"
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    Intervention:
+      type: object
+      required: [version, id, usuario_id, tipo, duracao_prevista_minutos, inicio, source, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        id:
+          type: string
+        usuario_id:
+          type: string
+        tipo:
+          type: string
+          enum: [respiracao_guiada, pausa_curta]
+        gatilho:
+          type: [string, "null"]
+        duracao_prevista_minutos:
+          type: integer
+          minimum: 1
+        inicio:
+          type: string
+          format: date-time
+        fim:
+          type: [string, "null"]
+          format: date-time
+        efeito_estimado:
+          type: [string, "null"]
+        feedback:
+          type: [string, "null"]
+        source:
+          $ref: "#/components/schemas/Source"
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    InterventionStartRequest:
+      type: object
+      properties:
+        intervention:
+          type: object
+          properties:
+            tipo:
+              type: string
+              enum: [respiracao_guiada, pausa_curta]
+            gatilho:
+              type: string
+            duracao_prevista_minutos:
+              type: integer
+              minimum: 1
+    InterventionFinishRequest:
+      type: object
+      properties:
+        intervention:
+          type: object
+          properties:
+            feedback:
+              type: string
+              maxLength: 120
+    InterventionListResponse:
+      type: object
+      required: [version, interventions, correlation_id, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        interventions:
+          type: array
+          items:
+            $ref: "#/components/schemas/Intervention"
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    InterventionResponse:
+      type: object
+      required: [version, intervention, events, correlation_id, privacy_level]
+      properties:
+        version:
+          type: integer
+          const: 1
+        intervention:
+          $ref: "#/components/schemas/Intervention"
+        energy:
+          $ref: "#/components/schemas/Energy"
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/DomainEvent"
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+    ResourceRef:
+      type: object
+      required: [type, id]
+      properties:
+        type:
+          type: string
+        id:
+          type: string
+    DomainEvent:
+      type: object
+      required: [version, event_id, event_type, occurred_at, actor, resource, source, correlation_id, privacy_level, metadata_minima]
+      properties:
+        version:
+          type: integer
+          const: 1
+        event_id:
+          type: string
+        event_type:
+          type: string
+          pattern: "^[a-z0-9_]+$"
+        occurred_at:
+          type: string
+          format: date-time
+        actor:
+          type: object
+          required: [type, id]
+          properties:
+            type:
+              type: string
+              enum: [usuario, admin, job, integration, system]
+            id:
+              type: string
+        resource:
+          $ref: "#/components/schemas/ResourceRef"
+        source:
+          $ref: "#/components/schemas/Source"
+        correlation_id:
+          type: string
+        privacy_level:
+          $ref: "#/components/schemas/PrivacyLevel"
+        metadata_minima:
+          type: object
+          additionalProperties:
+            type: [string, number, boolean, "null"]

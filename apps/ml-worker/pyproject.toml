@@ -1,0 +1,18 @@
+[project]
+name = "orb-ml-worker"
+version = "0.1.0"
+description = "Batch ML worker for Orb; produces derived signals and never owns critical product decisions."
+requires-python = "==3.13.14"
+dependencies = [
+  "fastapi==0.115.6",
+  "pydantic==2.12.5",
+  "polars==1.41.2",
+  "scikit-learn==1.9.0"
+]
+
+[project.optional-dependencies]
+dev = ["pytest==8.3.4"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

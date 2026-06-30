@@ -1,0 +1,2 @@
+class EnergyPolicy < ApplicationPolicy
+end

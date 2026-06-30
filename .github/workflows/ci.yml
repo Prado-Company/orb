@@ -1,0 +1,129 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+# The Makefile owns the executable commands, but the CI contract is explicit:
+# backend specs run through bundle exec rspec or bundle exec rails test.
+# frontend build runs pnpm build.
+# E2E runs Playwright through test:e2e.
+# shared contracts validate OpenAPI and fixtures.
+
+jobs:
+  red-first:
+    name: Red-first contracts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run red-first suite
+        run: bash -ic 'make test'
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: red-first-reports
+          path: test-reports/
+          if-no-files-found: ignore
+
+  contracts:
+    name: Shared contracts
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        if: hashFiles('packages/contracts/package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Bootstrap contracts
+        run: bash -ic 'make bootstrap-contracts'
+
+      - name: Test contracts
+        run: bash -ic 'make test-contracts'
+
+  backend:
+    name: Rails backend
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: orb_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      valkey:
+        image: valkey/valkey:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      RAILS_ENV: test
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/orb_test
+      REDIS_URL: redis://localhost:6379/0
+      VALKEY_URL: redis://localhost:6379/0
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        if: hashFiles('api/Gemfile') != ''
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "4.0.5"
+          working-directory: api
+          bundler-cache: true
+
+      - name: Bootstrap backend
+        run: bash -ic 'make bootstrap-backend'
+
+      - name: Test backend
+        run: bash -ic 'make test-backend'
+
+  frontend:
+    name: Web build and E2E
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        if: hashFiles('apps/web/package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Bootstrap frontend
+        run: bash -ic 'make bootstrap-frontend'
+
+      - name: Install Playwright browsers
+        if: hashFiles('apps/web/package.json') != ''
+        run: bash -ic 'cd apps/web && pnpm exec playwright install --with-deps'
+
+      - name: Build frontend
+        run: bash -ic 'make build-frontend'
+
+      - name: Run E2E
+        run: bash -ic 'make test-e2e'

@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "history": [
+    {
+      "version": 1,
+      "kind": "tarefa",
+      "event_type": "tarefa_criada",
+      "occurred_at": "2026-06-14T12:10:00Z",
+      "resource": {
+        "type": "tarefa",
+        "id": "tsk_01hz7s8q4v9y6z2m0k7a1b3c5d"
+      },
+      "source": "web",
+      "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "privacy_level": "interno",
+      "summary": {
+        "titulo": "Produzir relatorio",
+        "status": "nao_iniciado",
+        "categoria": "trabalho"
+      }
+    },
+    {
+      "version": 1,
+      "kind": "evento",
+      "event_type": "evento_criado",
+      "occurred_at": "2026-06-14T12:20:00Z",
+      "resource": {
+        "type": "evento",
+        "id": "evt_01hz7s8q4v9y6z2m0k7a1b3c5d"
+      },
+      "source": "web",
+      "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "privacy_level": "interno",
+      "summary": {
+        "titulo": "Bloco de foco",
+        "status": "confirmado",
+        "categoria": "trabalho"
+      }
+    },
+    {
+      "version": 1,
+      "kind": "tarefa",
+      "event_type": "tarefa_excluida",
+      "occurred_at": "2026-06-14T12:30:00Z",
+      "resource": {
+        "type": "tarefa",
+        "id": "tsk_deleted_01hz7s8q4v9y6z2m0k7a1b3c5d"
+      },
+      "source": "web",
+      "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "privacy_level": "interno",
+      "summary": {
+        "tombstone": true,
+        "status": "nao_iniciado"
+      }
+    }
+  ],
+  "entitlement": {
+    "plan": "free",
+    "history_window_days": 14,
+    "full_history": false,
+    "downgrade_behavior": "downgrade_preserva_dados_e_oculta_historico_fora_do_plano"
+  },
+  "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "interno"
+}

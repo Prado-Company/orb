@@ -1,0 +1,68 @@
+# Orb local artifacts
+test-reports/
+coverage/
+playwright-report/
+blob-report/
+test-results/
+
+# Local planning, agent, and design workspaces
+.agents/
+.codex/
+.design-system/
+.docs/
+.files/
+.web-design/
+AGENTS.md
+
+# Logs and runtime output
+*.log
+logs/
+tmp/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Node / frontend
+node_modules/
+apps/web/node_modules/
+packages/*/node_modules/
+dist/
+apps/web/dist/
+packages/*/dist/
+.pnpm-store/
+.npm/
+.yarn/
+!.yarn/releases/
+!.yarn/plugins/
+!.yarn/sdks/
+!.yarn/versions/
+
+# Rails / Ruby
+.bundle/
+api/.bundle/
+api/vendor/bundle/
+api/log/*
+!api/log/.keep
+api/tmp/*
+!api/tmp/.keep
+api/storage/*
+!api/storage/.keep
+api/coverage/
+api/db/*.sqlite3
+api/db/*.sqlite3-*
+
+# Python / ML worker
+.venv/
+apps/ml-worker/.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS and editors
+.DS_Store
+.idea/
+.vscode/

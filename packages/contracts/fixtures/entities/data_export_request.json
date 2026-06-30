@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "exp_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "status": "processando",
+  "formatos": [
+    "json",
+    "csv"
+  ],
+  "visible_to_user": true,
+  "requested_at": "2026-06-14T12:00:00Z",
+  "completed_at": null,
+  "expires_at": null,
+  "source": "web",
+  "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "sensivel"
+}

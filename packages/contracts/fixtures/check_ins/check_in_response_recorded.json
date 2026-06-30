@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "status": "respondido",
+  "check_in": {
+    "version": 1,
+    "id": "chk_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "tipo": "estado_energia",
+    "pergunta_id": "q_estado_energia_v1",
+    "resposta": "bom",
+    "horario_previsto": "08:00",
+    "horario_respondido": "2026-06-14T12:00:00Z",
+    "timezone": "America/Bahia",
+    "adiamentos": 0,
+    "origem": "manual",
+    "source": "web",
+    "privacy_level": "sensivel",
+    "created_at": "2026-06-14T11:55:00Z"
+  },
+  "energy": {
+    "version": 1,
+    "id": "eng_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "valor": 72,
+    "estado_qualitativo": "media",
+    "fonte_calibracao": "check_in",
+    "confianca": "media",
+    "timestamp": "2026-06-14T12:00:00Z",
+    "fatores": ["resposta_check_in", "tarefas_recentes", "eventos_recentes", "motor_deterministico_v1"],
+    "reason_codes": ["resposta_check_in", "tarefas_recentes", "eventos_recentes", "motor_deterministico_v1"],
+    "source": "web",
+    "privacy_level": "sensivel"
+  },
+  "events": [
+    {
+      "version": 1,
+      "event_id": "evt_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "event_type": "check_in_respondido",
+      "occurred_at": "2026-06-14T12:00:00Z",
+      "actor": { "type": "usuario", "id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d" },
+      "resource": { "type": "check_in", "id": "chk_01hz7s8q4v9y6z2m0k7a1b3c5d" },
+      "source": "web",
+      "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "privacy_level": "sensivel",
+      "metadata_minima": {
+        "resposta_tipo": "escala",
+        "adiamentos": 0,
+        "punitive": false
+      }
+    },
+    {
+      "version": 1,
+      "event_id": "evt_energia_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "event_type": "energia_recalibrada",
+      "occurred_at": "2026-06-14T12:00:00Z",
+      "actor": { "type": "usuario", "id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d" },
+      "resource": { "type": "energia", "id": "eng_01hz7s8q4v9y6z2m0k7a1b3c5d" },
+      "source": "web",
+      "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "privacy_level": "sensivel",
+      "metadata_minima": {
+        "energia_estado_resultante": "media",
+        "fonte_calibracao": "check_in",
+        "confianca": "media"
+      }
+    }
+  ],
+  "daily_limit": {
+    "plan": "free",
+    "limit": 2,
+    "used": 1,
+    "remaining": 1,
+    "period": "dia",
+    "resets_at": "2026-06-15T03:00:00Z",
+    "enforced_by": "server"
+  },
+  "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "sensivel"
+}

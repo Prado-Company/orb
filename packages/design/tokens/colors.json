@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "tokens": {
+    "color_background": "#f7f8fb",
+    "color_surface": "#ffffff",
+    "color_text": "#18202a",
+    "color_accent": "#2f7d6d",
+    "color_attention": "#c45535"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "intervention": {
+    "version": 1,
+    "id": "int_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "tipo": "respiracao_guiada",
+    "gatilho": "sobrecarga",
+    "duracao_prevista_minutos": 3,
+    "inicio": "2026-06-14T12:10:00Z",
+    "fim": "2026-06-14T12:13:00Z",
+    "efeito_estimado": "recuperacao_leve",
+    "feedback": "ajudou",
+    "source": "web",
+    "privacy_level": "sensivel"
+  },
+  "energy": {
+    "version": 1,
+    "id": "eng_rec_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "valor": 58,
+    "estado_qualitativo": "em_recuperacao",
+    "fonte_calibracao": "intervencao",
+    "confianca": "media",
+    "timestamp": "2026-06-14T12:13:00Z",
+    "fatores": ["intervencao_finalizada", "recarga_intervencao", "recuperacao_protegida"],
+    "reason_codes": ["intervencao_finalizada", "recarga_intervencao", "recuperacao_protegida"],
+    "source": "web",
+    "privacy_level": "sensivel"
+  },
+  "events": [
+    {
+      "version": 1,
+      "event_id": "evt_int_finish_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "event_type": "intervencao_finalizada",
+      "occurred_at": "2026-06-14T12:13:00Z",
+      "actor": { "type": "usuario", "id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d" },
+      "resource": { "type": "intervencao", "id": "int_01hz7s8q4v9y6z2m0k7a1b3c5d" },
+      "source": "web",
+      "correlation_id": "cor_int_finish_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "privacy_level": "sensivel",
+      "metadata_minima": {
+        "tipo": "respiracao_guiada",
+        "duracao_prevista_minutos": 3,
+        "feedback_tipo": "opcional",
+        "punitive": false
+      }
+    },
+    {
+      "version": 1,
+      "event_id": "evt_int_energy_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "event_type": "energia_recalibrada",
+      "occurred_at": "2026-06-14T12:13:00Z",
+      "actor": { "type": "usuario", "id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d" },
+      "resource": { "type": "energia", "id": "eng_rec_01hz7s8q4v9y6z2m0k7a1b3c5d" },
+      "source": "web",
+      "correlation_id": "cor_int_finish_01hz7s8q4v9y6z2m0k7a1b3c5d",
+      "privacy_level": "sensivel",
+      "metadata_minima": {
+        "energia_estado_resultante": "em_recuperacao",
+        "fonte_calibracao": "intervencao",
+        "confianca": "media"
+      }
+    }
+  ],
+  "correlation_id": "cor_int_finish_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "sensivel"
+}

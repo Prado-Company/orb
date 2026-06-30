@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "onboarding_state": "onboarding_pulado",
+  "source": "web",
+  "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5f",
+  "privacy_level": "sensivel",
+  "default_profile_created": true,
+  "resume_available": true,
+  "defaults": {
+    "objetivo_principal": "rotina_geral",
+    "janelas_pico": [],
+    "gatilhos": [],
+    "tom_preferido": "acolhedor",
+    "sensibilidade": "media",
+    "intensidade_notificacao": "equilibrado",
+    "horario_primeiro_check_in": "08:00",
+    "horario_ultimo_check_in": "18:00",
+    "energia_inicial": {
+      "estado_qualitativo": "media",
+      "confianca": "baixa"
+    }
+  },
+  "perfil_energetico": {
+    "version": 1,
+    "id": "enp_01hz7s8q4v9y6z2m0k7a1b3c5f",
+    "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "arquetipo": "Explorador Versatil",
+    "objetivo_principal": "rotina_geral",
+    "janelas_pico": [],
+    "janelas_baixa_energia": [],
+    "gatilhos": [],
+    "identificacoes_neurodivergentes": [],
+    "tom_preferido": "acolhedor",
+    "sensibilidade": "media",
+    "intensidade_notificacao": "equilibrado",
+    "horario_primeiro_check_in": "08:00",
+    "horario_ultimo_check_in": "18:00",
+    "horarios_refeicoes": [],
+    "pausas_protegidas": [],
+    "confianca": "baixa",
+    "data_onboarding": "2026-06-14T12:05:00Z",
+    "decision_engine": "deterministico",
+    "llm_used": false,
+    "source": "web",
+    "privacy_level": "sensivel",
+    "updated_at": "2026-06-14T12:05:00Z"
+  },
+  "energia": {
+    "version": 1,
+    "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "valor": 50,
+    "estado_qualitativo": "media",
+    "fonte_calibracao": "onboarding",
+    "confianca": "baixa",
+    "timestamp": "2026-06-14T12:05:00Z",
+    "fatores": [
+      "perfil_provisorio"
+    ],
+    "reason_codes": [
+      "perfil_provisorio",
+      "motor_deterministico_v1"
+    ],
+    "source": "web",
+    "privacy_level": "sensivel"
+  },
+  "event": {
+    "version": 1,
+    "event_id": "dme_01hz7s8q4v9y6z2m0k7a1b3c6a",
+    "event_type": "onboarding_pulado",
+    "occurred_at": "2026-06-14T12:05:00Z",
+    "actor": {
+      "type": "usuario",
+      "id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d"
+    },
+    "resource": {
+      "type": "perfil_energetico",
+      "id": "enp_01hz7s8q4v9y6z2m0k7a1b3c5f"
+    },
+    "source": "web",
+    "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5f",
+    "privacy_level": "sensivel",
+    "metadata_minima": {
+      "skip_reason": "explorar_primeiro",
+      "default_profile_created": true,
+      "resume_available": true,
+      "profile_confidence": "baixa",
+      "decision_engine": "deterministico",
+      "llm_used": false
+    }
+  }
+}

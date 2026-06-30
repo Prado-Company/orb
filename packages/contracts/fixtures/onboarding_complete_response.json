@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "onboarding_state": "onboarding_concluido",
+  "source": "web",
+  "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "privacy_level": "sensivel",
+  "perfil_energetico": {
+    "version": 1,
+    "id": "enp_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "arquetipo": "Coruja Estrategica",
+    "objetivo_principal": "trabalho",
+    "janelas_pico": [
+      "noite"
+    ],
+    "janelas_baixa_energia": [
+      "depois_do_almoco"
+    ],
+    "gatilhos": [
+      "reunioes_longas"
+    ],
+    "identificacoes_neurodivergentes": [],
+    "tom_preferido": "acolhedor",
+    "sensibilidade": "media",
+    "intensidade_notificacao": "equilibrado",
+    "horario_primeiro_check_in": "08:00",
+    "horario_ultimo_check_in": "18:00",
+    "horarios_refeicoes": [
+      "12:00"
+    ],
+    "pausas_protegidas": [],
+    "confianca": "media",
+    "data_onboarding": "2026-06-14T12:00:00Z",
+    "decision_engine": "deterministico",
+    "llm_used": false,
+    "source": "web",
+    "privacy_level": "sensivel",
+    "updated_at": "2026-06-14T12:00:00Z"
+  },
+  "energia": {
+    "version": 1,
+    "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "valor": 60,
+    "estado_qualitativo": "media",
+    "fonte_calibracao": "onboarding",
+    "confianca": "baixa",
+    "timestamp": "2026-06-14T12:00:00Z",
+    "fatores": [
+      "perfil_inicial"
+    ],
+    "reason_codes": [
+      "perfil_inicial",
+      "motor_deterministico_v1"
+    ],
+    "source": "web",
+    "privacy_level": "sensivel"
+  },
+  "event": {
+    "version": 1,
+    "event_id": "dme_01hz7s8q4v9y6z2m0k7a1b3c5e",
+    "event_type": "onboarding_concluido",
+    "occurred_at": "2026-06-14T12:00:00Z",
+    "source": "web",
+    "actor": {
+      "type": "usuario",
+      "id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d"
+    },
+    "resource": {
+      "type": "perfil_energetico",
+      "id": "enp_01hz7s8q4v9y6z2m0k7a1b3c5d"
+    },
+    "correlation_id": "cor_01hz7s8q4v9y6z2m0k7a1b3c5d",
+    "privacy_level": "sensivel",
+    "metadata_minima": {
+      "flow_variant": "resumido",
+      "profile_confidence": "media",
+      "skipped_sensitive_fields": true,
+      "neurodivergence_declared": false,
+      "decision_engine": "deterministico",
+      "llm_used": false,
+      "first_action_offered": true
+    }
+  },
+  "first_action": {
+    "type": "create_first_task_or_event",
+    "status": "offered"
+  }
+}

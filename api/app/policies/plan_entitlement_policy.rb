@@ -1,0 +1,2 @@
+class PlanEntitlementPolicy < ApplicationPolicy
+end

@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "id": "evt_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "usuario_id": "usr_01hz7s8q4v9y6z2m0k7a1b3c5d",
+  "organizacao_id": null,
+  "titulo": "Bloco de foco",
+  "inicio": "2026-06-14T13:00:00Z",
+  "fim": "2026-06-14T14:00:00Z",
+  "timezone": "America/Bahia",
+  "categoria": "trabalho",
+  "peso": "leve",
+  "status": "confirmado",
+  "recorrencia": null,
+  "origem": "usuario",
+  "external_ref": null,
+  "privacy_level": "interno",
+  "created_at": "2026-06-14T12:00:00Z",
+  "updated_at": "2026-06-14T12:00:00Z"
+}
